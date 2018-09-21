@@ -14,4 +14,5 @@ public class Constants {
     public static final String PREFIX_OF_LOGGER = "[Router-Anno-Compiler]-- ";
 
     public static final String PARCELABLE = "android.os.Parcelable";
+    public static final String ACTIVITY = "android.app.Activity";
 }
