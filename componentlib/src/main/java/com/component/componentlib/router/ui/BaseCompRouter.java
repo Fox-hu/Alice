@@ -22,7 +22,13 @@ public abstract class BaseCompRouter implements IComponentRouter {
     protected Map<String, Class> routeMapper = new HashMap<String, Class>();
     protected Map<Class, Map<String, Integer>> paramsMapper = new HashMap<>();
 
+    protected boolean isMapInited = false;
+
     protected abstract String getHost();
+
+    protected void initMap(){
+        isMapInited = true;
+    }
 
     @Override
     public boolean openUri(Context context, String url, Bundle bundle) {
@@ -47,6 +53,10 @@ public abstract class BaseCompRouter implements IComponentRouter {
 
     @Override
     public boolean openUri(Context context, Uri uri, Bundle bundle, Integer requestCode) {
+        if(!isMapInited){
+            initMap();
+        }
+
         if (uri == null || context == null) {
             return true;
         }
@@ -85,6 +95,11 @@ public abstract class BaseCompRouter implements IComponentRouter {
         if (!getHost().equals(host)) {
             return false;
         }
+
+        if(!isMapInited){
+            initMap();
+        }
+
         List<String> pathSegments = uri.getPathSegments();
         String path = "/" + TextUtils.join("/", pathSegments);
         return routeMapper.containsKey(path);

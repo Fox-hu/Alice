@@ -5,6 +5,6 @@ import org.gradle.internal.impldep.aQute.libg.xslt.Transform
 
 class ComCodeTransform extends Transform {
     private Project project
-    ClassPool classPool
+//    ClassPool classPool
     String applicationName
 }

@@ -59,10 +59,13 @@ public class MainPlugin implements Plugin<Project> {
                 }
             }
             System.out.println("apply plugin is " + 'com.android.application')
-            if(assembleTask.isAssemble && module.equals(compilemodule)){
-                compileComponents(assembleTask,project)
+            if (assembleTask.isAssemble && module.equals(compilemodule)) {
+                compileComponents(assembleTask, project)
                 project.android.registerTransform(new ComCodeTransform())
             }
+        } else {
+            project.apply plugin: 'com.android.library'
+            System.out.println("apply plugin is " + 'com.android.library')
         }
     }
 
@@ -96,6 +99,37 @@ public class MainPlugin implements Plugin<Project> {
                 assembleTask.isAssemble = true
                 String[] strs = task.split(":")
                 assembleTask.modules.add(strs.length > 1 ? strs[strs.length - 2] : "all")
+                break
+            }
+        }
+        return assembleTask
+    }
+
+    private void compileComponents(AssembleTask assembleTask, Project project) {
+        String components
+        if (assembleTask.isDebug) {
+            components = (String) project.properties.get("debugComponent")
+        } else {
+            components = (String) project.properties.get("compileComponent")
+        }
+        if (components == null || components.length() == 0) {
+            System.out.println("there is no add dependencies ")
+            return
+        }
+
+        String[] compileComponents = components.split(",")
+        if (compileComponents == null || compileComponents.length == 0) {
+            System.out.println("there is no add dependencies")
+        }
+
+        for (String str : compileComponents) {
+            System.out.println("comp is " + str)
+            if (str.contains(":")) {
+                project.dependencies.add("compile", str)
+                System.out.println("add dependencies lib : " + str)
+            } else {
+                project.dependencies.add("compile", project.project(':' + str))
+                System.out.println("add dependencies project : " + str)
             }
         }
     }
