@@ -2,6 +2,9 @@ apply plugin: 'groovy'
 apply plugin: 'maven'
 
 dependencies {
+    compile 'com.android.tools.build:gradle:2.3.2'
+    //字节码插入api
+    compile group: 'org.javassist', name: 'javassist', version: '3.20.0-GA'
     compile gradleApi()
     compile localGroovy()
 }
