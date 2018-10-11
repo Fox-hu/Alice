@@ -2,8 +2,11 @@ package com.xys
 
 import com.android.build.api.transform.*
 import com.android.build.gradle.internal.pipeline.TransformManager
+import javassist.CannotCompileException
 import javassist.ClassPool
 import javassist.CtClass
+import javassist.CtMethod
+import javassist.NotFoundException
 import org.apache.commons.codec.digest.DigestUtils
 import org.apache.commons.io.FileUtils
 import org.gradle.api.Project
@@ -58,7 +61,66 @@ class ComCodeTransform extends Transform {
                         def location = transformInvocation.outputProvider.getContentLocation(jarName + md5Name, jarInput.contentTypes, jarInput.scopes, Format.JAR)
                         FileUtils.copyFile(jarInput.file, location)
                 }
+
+                input.directoryInputs.each {
+                    DirectoryInput directoryInput ->
+                        boolean isRegisterCompoAuto = project.extensions.combuild.isRegisterCompoAuto
+                        if (isRegisterCompoAuto) {
+                            String fileName = directoryInput.file.absolutePath
+                            File dir = new File(fileName)
+                            dir.eachFileRecurse { File file ->
+                                String filePath = file.absolutePath
+                                String classNameTemp = filePath.replace(fileName, "")
+                                        .replace("\\", ".")
+                                        .replace("/", ".")
+                                if (classNameTemp.endsWith(".class")) {
+                                    String className = classNameTemp.substring(1, classNameTemp.length() - 6)
+                                    if (className.equals(applicationName)) {
+                                        injectApplicationCode(applications.get(0), activators, fileName)
+                                    }
+                                }
+                            }
+                        }
+
+                        def dest = transformInvocation.outputProvider.getContentLocation(directoryInput.name,
+                                directoryInput.contentTypes,
+                                directoryInput.scopes, Format.DIRECTORY)
+                        // 将input的目录复制到output指定目录
+                        FileUtils.copyDirectory(directoryInput.file, dest)
+                }
         }
+    }
+
+    private void injectApplicationCode(CtClass ctClassApplication, List<CtClass> activators, String patch) {
+        System.out.println("injectApplicationCode begin")
+        ctClassApplication.defrost()
+        try {
+            CtMethod attachBaseContextMethod = ctClassApplication.getDeclaredMethod("onCreate", null)
+            attachBaseContextMethod.insertAfter(getAutoLoadComCode(activators))
+        } catch (CannotCompileException | NotFoundException e) {
+            StringBuilder methodBody = new StringBuilder()
+            methodBody.append("protected void onCreate() {")
+            methodBody.append("super.onCreate();")
+            methodBody.
+                    append(getAutoLoadComCode(activators))
+            methodBody.append("}")
+            ctClassApplication.addMethod(CtMethod.make(methodBody.toString(), ctClassApplication))
+        } catch (Exception e) {
+
+        }
+        ctClassApplication.writeFile(patch)
+        ctClassApplication.detach()
+
+        System.out.println("injectApplicationCode success ")
+    }
+
+    private String getAutoLoadComCode(List<CtClass> activators) {
+        StringBuilder autoLoadComCode = new StringBuilder()
+        for (CtClass ctClass : activators) {
+            autoLoadComCode.append("new " + ctClass.getName() + "()" + ".onCreate();")
+        }
+
+        return autoLoadComCode.toString()
     }
 
     void getRealApplicationName() {

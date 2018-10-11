@@ -12,6 +12,7 @@
       <module fileurl="file://$PROJECT_DIR$/readercomponent/readercomponent.iml" filepath="$PROJECT_DIR$/readercomponent/readercomponent.iml" />
       <module fileurl="file://$PROJECT_DIR$/router-annotation/router-annotation.iml" filepath="$PROJECT_DIR$/router-annotation/router-annotation.iml" />
       <module fileurl="file://$PROJECT_DIR$/router-compiler/router-compiler.iml" filepath="$PROJECT_DIR$/router-compiler/router-compiler.iml" />
+      <module fileurl="file://$PROJECT_DIR$/sharecomponent/sharecomponent.iml" filepath="$PROJECT_DIR$/sharecomponent/sharecomponent.iml" />
     </modules>
   </component>
 </project>

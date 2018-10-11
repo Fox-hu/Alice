@@ -45,10 +45,6 @@ public class RouteProcessor extends AbstractProcessor {
     private static final String mRouteMapperFieldName = "routeMapper";
     private static final String mParamsMapperFieldName = "paramsMapper";
 
-    /**
-     * 注解处理器是运行在另外一个jvm之中，如果发生异常则crash信息晦涩难懂 所以提供一个
-     * messager进行信息处理给其他使用处理器的进程
-     */
     private Logger logger;
 
     private Filer mFiler;

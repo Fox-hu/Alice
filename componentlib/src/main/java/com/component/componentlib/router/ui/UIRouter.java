@@ -27,7 +27,7 @@ public class UIRouter implements IUIRouter {
 
     }
 
-    public UIRouter get() {
+    public static UIRouter get() {
         return Holder.INSTANCE;
     }
 

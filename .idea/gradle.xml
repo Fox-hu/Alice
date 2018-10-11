@@ -17,6 +17,7 @@
             <option value="$PROJECT_DIR$/readercomponent" />
             <option value="$PROJECT_DIR$/router-annotation" />
             <option value="$PROJECT_DIR$/router-compiler" />
+            <option value="$PROJECT_DIR$/sharecomponent" />
           </set>
         </option>
         <option name="resolveModulePerSourceSet" value="false" />

@@ -1,1 +1,1 @@
-include ':app', ':plugin', ':router-annotation', ':router-compiler', ':componentlib', ':basiclib', ':basicres', ':componentservice', ':readercomponent'
+include ':app', ':plugin', ':router-annotation', ':router-compiler', ':componentlib', ':basiclib', ':basicres', ':componentservice', ':readercomponent', ':sharecomponent'
