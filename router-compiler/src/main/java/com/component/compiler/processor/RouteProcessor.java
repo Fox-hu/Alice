@@ -1,6 +1,7 @@
 package com.component.compiler.processor;
 
 import com.component.compiler.Constants;
+import com.component.compiler.utils.FileUtils;
 import com.component.compiler.utils.Logger;
 import com.component.compiler.utils.TypeUtils;
 import com.component.router.annotation.RouteNode;
@@ -8,10 +9,17 @@ import com.component.router.enums.NodeType;
 import com.component.router.model.Node;
 import com.component.router.utils.RouteUtils;
 import com.google.auto.service.AutoService;
+import com.squareup.javapoet.ClassName;
+import com.squareup.javapoet.JavaFile;
+import com.squareup.javapoet.MethodSpec;
+import com.squareup.javapoet.TypeName;
+import com.squareup.javapoet.TypeSpec;
 
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.StringUtils;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Map;
@@ -27,10 +35,13 @@ import javax.annotation.processing.SupportedOptions;
 import javax.annotation.processing.SupportedSourceVersion;
 import javax.lang.model.SourceVersion;
 import javax.lang.model.element.Element;
+import javax.lang.model.element.Modifier;
 import javax.lang.model.element.TypeElement;
 import javax.lang.model.type.TypeMirror;
 import javax.lang.model.util.Elements;
 import javax.lang.model.util.Types;
+
+import static javax.lang.model.element.Modifier.PUBLIC;
 
 /**
  * @author fox.hu
@@ -99,21 +110,97 @@ public class RouteProcessor extends AbstractProcessor {
         return false;
     }
 
-    private void generateRouterTable() {
-        String clzName = RouteUtils.genHostUIRouterClass(host);
+    private void generateRouterImpl() {
+        String claName = RouteUtils.genHostUIRouterClass(host);
 
         //pkg
-        String pkg = clzName.substring(0, clzName.lastIndexOf("."));
-
+        String pkg = claName.substring(0, claName.lastIndexOf("."));
         //simpleName
-        String simpleName = clzName.substring(clzName.lastIndexOf(".") + 1);
+        String cn = claName.substring(claName.lastIndexOf(".") + 1);
+        // superClassName
+        ClassName superClass = ClassName.get(elements.getTypeElement(Constants.BASECOMPROUTER));
 
-//        ClassName.get(elements.getTypeElement())
+        MethodSpec initHostMethod = generateInitHostMethod();
+        MethodSpec initMapMethod = generateInitMapMethod();
 
+        try {
+            JavaFile.builder(pkg, TypeSpec.classBuilder(cn).addModifiers(PUBLIC).superclass(
+                    superClass).addMethod(initHostMethod).addMethod(initMapMethod).build()).build()
+                    .writeTo(mFiler);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
-    private void generateRouterImpl() {
+    private void generateRouterTable() {
+        String fileName = RouteUtils.genRouterTable(host);
+        if (FileUtils.createFile(fileName)) {
 
+            StringBuilder stringBuilder = new StringBuilder();
+            stringBuilder.append("auto generated, do not change !!!! \n\n");
+            stringBuilder.append("HOST : " + host + "\n\n");
+
+            for (Node node : routerNodes) {
+                stringBuilder.append(node.getDesc() + "\n");
+                stringBuilder.append(node.getPath() + "\n");
+                Map<String, String> paramsType = node.getParamsDesc();
+                if (MapUtils.isNotEmpty(paramsType)) {
+                    for (Map.Entry<String, String> types : paramsType.entrySet()) {
+                        stringBuilder.append(types.getKey() + ":" + types.getValue() + "\n");
+                    }
+                }
+                stringBuilder.append("\n");
+            }
+            FileUtils.writeStringToFile(fileName, stringBuilder.toString(), false);
+        }
+    }
+
+    /**
+     * create init host method
+     */
+    private MethodSpec generateInitHostMethod() {
+        TypeName returnType = TypeName.get(type_String);
+
+        MethodSpec.Builder openUriMethodSpecBuilder = MethodSpec.methodBuilder("getHost").returns(
+                returnType).addAnnotation(Override.class).addModifiers(Modifier.PUBLIC);
+
+        openUriMethodSpecBuilder.addStatement("return $S", host);
+
+        return openUriMethodSpecBuilder.build();
+    }
+
+    private MethodSpec generateInitMapMethod() {
+        TypeName returnType = TypeName.VOID;
+
+        MethodSpec.Builder openUriMethodSpecBuilder = MethodSpec.methodBuilder("initMap").returns(
+                returnType).addAnnotation(Override.class).addModifiers(Modifier.PUBLIC);
+
+        openUriMethodSpecBuilder.addStatement("super.initMap()");
+
+        for (Node node : routerNodes) {
+            openUriMethodSpecBuilder.addStatement(mRouteMapperFieldName + ".put($S,$T.class)",
+                    node.getPath(), ClassName.get((TypeElement) node.getRawType()));
+
+            // Make map body for paramsType
+            StringBuilder mapBodyBuilder = new StringBuilder();
+            Map<String, Integer> paramsType = node.getParamsType();
+            if (MapUtils.isNotEmpty(paramsType)) {
+                for (Map.Entry<String, Integer> types : paramsType.entrySet()) {
+                    mapBodyBuilder.append("put(\"").append(types.getKey()).append("\", ").append(
+                            types.getValue()).append("); ");
+                }
+            }
+            String mapBody = mapBodyBuilder.toString();
+            logger.info(">>> mapBody: " + mapBody + " <<<");
+            if (!StringUtils.isEmpty(mapBody)) {
+                openUriMethodSpecBuilder.addStatement(mParamsMapperFieldName + ".put($T.class," +
+                                                      "new java.util.HashMap<String, Integer>(){{" +
+                                                      mapBody + "}}" + ")",
+                        ClassName.get((TypeElement) node.getRawType()));
+            }
+        }
+
+        return openUriMethodSpecBuilder.build();
     }
 
     private void parseRouteNodes(Set<? extends Element> routeNodes) {

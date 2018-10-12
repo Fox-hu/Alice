@@ -7,12 +7,13 @@ import android.widget.TextView;
 
 import com.component.basicres.BaseActivity;
 import com.component.componentservice.share.bean.Author;
+import com.component.router.annotation.RouteNode;
 import com.component.share.R;
 
 /**
  * Created by fox.hu on 2018/10/11.
  */
-
+@RouteNode(path = "/shareBook", desc = "分享书籍页面")
 public class ShareActivity extends BaseActivity {
 
     String bookName;

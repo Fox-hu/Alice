@@ -15,4 +15,5 @@ public class Constants {
 
     public static final String PARCELABLE = "android.os.Parcelable";
     public static final String ACTIVITY = "android.app.Activity";
+    public static final String BASECOMPROUTER = "com.component.componentlib.router.ui.BaseCompRouter";
 }

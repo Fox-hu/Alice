@@ -10,6 +10,12 @@ android {
         targetSdkVersion 26
         versionCode 1
         versionName "1.0"
+
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [host: "share"]
+            }
+        }
     }
 
     buildTypes {
@@ -30,7 +36,11 @@ combuild {
 
 dependencies {
     implementation fileTree(dir: 'libs', include: ['*.jar'])
-
+    annotationProcessor project(':router-compiler')
     implementation 'com.android.support:appcompat-v7:26.1.0'
     compile project(':componentservice')
+}
+
+repositories {
+    mavenCentral()
 }
