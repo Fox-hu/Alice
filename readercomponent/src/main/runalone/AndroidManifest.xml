@@ -3,10 +3,20 @@
           package="com.component.readercomponent" >
 
     <application
+        android:name=".runalone.application.ReaderApplication"
         tools:replace="android:label"
         android:allowBackup="true"
         android:label="@string/readerbook_app_name"
+        android:theme="@style/commonAppTheme"
         android:supportsRtl="true" >
+
+        <activity android:name=".runalone.ReaderTestActivity">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
 
     </application >
 </manifest >

@@ -44,6 +44,7 @@ public class MainPlugin implements Plugin<Project> {
             }
         }
         project.setProperty("isRunAlone", isRunAlone)
+        System.out.println("compilemodule is " + compilemodule + "isRunAlone is " + isRunAlone)
 
         if (isRunAlone) {
             project.apply plugin: 'com.android.application'

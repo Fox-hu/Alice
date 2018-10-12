@@ -1,7 +1,8 @@
 package com.component.readercomponent.runalone.application;
-import com.component.baseicres.BaseApplication;
 
-public class ReaderApplication extends BaseApplicatio {
+import com.component.basicres.BaseApplication;
+
+public class ReaderApplication extends BaseApplication {
     @Override
     public void onCreate() {
         super.onCreate();

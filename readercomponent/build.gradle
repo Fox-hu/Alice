@@ -1,4 +1,4 @@
-apply plugin: 'com.android.application'
+apply plugin: 'com.xys.plugin'
 
 android {
     compileSdkVersion 26
@@ -23,6 +23,11 @@ android {
     }
     resourcePrefix "readerbook_"
 
+}
+
+combuild {
+    applicationName = 'com.luojilab.reader.runalone.application.ReaderApplication'
+    isRegisterCompoAuto = true
 }
 
 dependencies {
