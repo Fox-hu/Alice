@@ -136,6 +136,7 @@ public class UIRouter implements IUIRouter {
             Class<?> clz = Class.forName(path);
             IComponentRouter instance = (IComponentRouter) clz.newInstance();
             routerInstanceCache.put(path, instance);
+            return instance;
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         } catch (IllegalAccessException e) {

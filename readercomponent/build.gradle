@@ -13,6 +13,12 @@ android {
 
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
 
+        javaCompileOptions {
+            annotationProcessorOptions {
+                arguments = [host: "reader"]
+            }
+        }
+
     }
 
     buildTypes {
@@ -27,7 +33,7 @@ android {
 
 combuild {
     applicationName = 'com.luojilab.reader.runalone.application.ReaderApplication'
-    isRegisterCompoAuto = true
+    isRegisterCompoAuto = false
 }
 
 dependencies {

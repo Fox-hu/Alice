@@ -1,4 +1,4 @@
-package com.component.share.applike;
+package com.component.share;
 
 import android.content.Intent;
 import android.os.Bundle;
@@ -8,7 +8,6 @@ import android.widget.TextView;
 import com.component.basicres.BaseActivity;
 import com.component.componentservice.share.bean.Author;
 import com.component.router.annotation.RouteNode;
-import com.component.share.R;
 
 /**
  * Created by fox.hu on 2018/10/11.
