@@ -10,15 +10,15 @@ import java.util.HashMap;
  * Created by fox.hu on 2018/9/25.
  */
 
-public class Route {
-    private static final String TAG = Route.class.getSimpleName();
+public class Router {
+    private static final String TAG = Router.class.getSimpleName();
 
     private HashMap<String, Object> services = new HashMap<>();
     private static HashMap<String, IApplicationLike> components = new HashMap<>();
 
-    private Route() {}
+    private Router() {}
 
-    public static Route get() {
+    public static Router get() {
         return Holder.INSTANCE;
     }
 
@@ -83,6 +83,6 @@ public class Route {
     }
 
     private static final class Holder {
-        private static final Route INSTANCE = new Route();
+        private static final Router INSTANCE = new Router();
     }
 }
